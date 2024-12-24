@@ -92,7 +92,9 @@ export default function App() {
                   onChange={(e) => setYear(e.target.value)}
                 >
                   {years.map((i) => (
-                    <MenuItem value={i}>{i}</MenuItem>
+                    <MenuItem key={i} value={i}>
+                      {i}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
