@@ -4,6 +4,7 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  Box,
 } from "@mui/material";
 import "../App.css";
 import Grid from "@mui/material/Grid2";
@@ -11,7 +12,9 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { VegaLite } from "react-vega";
 
 export default function App() {
   const [parameter, setParameter] = useState("T");
@@ -19,10 +22,19 @@ export default function App() {
   const [date, setDate] = useState(dayjs("2022-04-17"));
   const [year, setYear] = useState(1992);
   const [interval, setInterval] = useState("woche");
+  const [spec, setSpec] = useState(null);
+
   const years = [];
   for (let i = 1992; i <= 2024; i++) {
     years.push(i);
   }
+  useEffect(() => {
+    axios
+      .get(`http://127.0.0.1:8000/specs`)
+      .then((response) => setSpec(response.data))
+      .catch((error) => console.error("Error fetching spec content:", error));
+  }, []);
+
   return (
     <>
       <div id="side">
@@ -115,6 +127,7 @@ export default function App() {
               </FormControl>
             </Grid>
           </Grid>
+          <Box sx={{ flex: 4 }}>{spec && <VegaLite spec={spec} />}</Box>
         </div>
       </div>
     </>
