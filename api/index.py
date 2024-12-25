@@ -7,7 +7,8 @@ import altair as alt
 app = FastAPI()
 
 allow_origins = [
-    "http://localhost:8000",
+    "http://localhost:3000",
+    "https://wettervergleich.vercel.app",
 ]
 app.add_middleware(
     CORSMiddleware,
