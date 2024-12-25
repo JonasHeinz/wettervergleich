@@ -19,34 +19,48 @@ app.add_middleware(
 )
 
 
-def filter(parameter="T", station="Zch_Stampfenbachstrasse", date=pd.to_datetime('2021-05-30 00:00:00+01:00'), year="2022", interval="monat"):
+def filter(parameter, date, interval):
 
     data = pd.read_csv("./data/wetterdaten_combined.csv")
 
     data['Datum'] = pd.to_datetime(data['Datum'])
     endDate = date
     if interval == "jahr":
-        endDate += pd.DateOffset(year=1)
+        endDate += pd.DateOffset(years=1)
     elif interval == "monat":
         endDate += pd.DateOffset(months=1)
     elif interval == "woche":
-        endDate += pd.DateOffset(weaks=1)
-
-    print(endDate)
+        endDate += pd.DateOffset(weeks=1)
 
     data = data[data['Datum'] >= date]
+    print(endDate)
     data = data[data['Datum'] <= endDate]
+
     data = data[data['Parameter'] == parameter]
-    data = data[data['Standort'] == station]
+    data = data[data['Standort'] == "Zch_Stampfenbachstrasse"]
+
     return data
 
 
 @app.get("/specs/")
-async def get_spec():
-    print(filter())
+async def get_spec(parameter, date, year, interval):
+    date = pd.to_datetime(date)
+    dateBefore = date.replace(year=int(year))
+    filtered = filter(parameter, date, interval)
+    filteredBefore = filter(parameter, dateBefore, interval)
+    filteredBefore['Datum'] = filteredBefore['Datum'].apply(
+        lambda x: x.replace(year=date.year))
+    chart = alt.Chart(filtered).mark_line().encode(
+        alt.X('Datum:T', axis=alt.Axis(format="%b %d")),
+        alt.Y('Wert:Q'),
 
-    chart = alt.Chart(filter()).mark_point().encode(
-        x='Datum',
-        y='Wert'
+
     )
-    return JSONResponse(content=chart.to_dict())
+    chartBefore = alt.Chart(filteredBefore).mark_line().encode(
+        alt.X('Datum:T', axis=alt.Axis(format="%b %d")),
+        alt.Y('Wert:Q'),
+
+
+    )
+
+    return JSONResponse(content=(alt.layer(chart, chartBefore)).to_dict())
