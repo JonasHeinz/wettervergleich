@@ -35,7 +35,7 @@ export function VegaForm({ setSpec }) {
       })
       .then((response) => setSpec(response.data))
       .catch((error) => console.error("Error fetching spec content:", error));
-  }, [parameter, date, year, interval]);
+  }, [parameter, date, year, interval, setSpec]);
 
   return (
     <Stack spacing={2} direction="column">
@@ -92,3 +92,4 @@ export function VegaForm({ setSpec }) {
     </Stack>
   );
 }
+export default VegaForm;
