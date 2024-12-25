@@ -48,19 +48,16 @@ async def get_spec(parameter, date, year, interval):
     dateBefore = date.replace(year=int(year))
     filtered = filter(parameter, date, interval)
     filteredBefore = filter(parameter, dateBefore, interval)
+    filtered['Datum'] = filtered['Datum'].apply(lambda x: x.replace(year=2000))
     filteredBefore['Datum'] = filteredBefore['Datum'].apply(
-        lambda x: x.replace(year=date.year))
-    chart = alt.Chart(filtered).mark_line().encode(
+        lambda x: x.replace(year=2000))
+    chart = alt.Chart(filtered).mark_line(color="blue").encode(
         alt.X('Datum:T', axis=alt.Axis(format="%b %d")),
         alt.Y('Wert:Q'),
-
-
     )
-    chartBefore = alt.Chart(filteredBefore).mark_line().encode(
+    chartBefore = alt.Chart(filteredBefore).mark_line(color="orange").encode(
         alt.X('Datum:T', axis=alt.Axis(format="%b %d")),
         alt.Y('Wert:Q'),
-
-
     )
 
     return JSONResponse(content=(alt.layer(chart, chartBefore)).to_dict())
