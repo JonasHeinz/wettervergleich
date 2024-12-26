@@ -1,4 +1,3 @@
-import { VegaLite } from "react-vega";
 import {
   Box,
   TableContainer,

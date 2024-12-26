@@ -9,6 +9,8 @@ app = FastAPI()
 allow_origins = [
     "http://localhost:3000",
     "https://wettervergleich.vercel.app",
+    "https://wettervergleich-git-main-jonasheinzs-projects.vercel.app/",
+    "https://wettervergleich-jfglsmnhe-jonasheinzs-projects.vercel.app/"
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -60,6 +62,7 @@ async def get_spec(parameter, date, year, interval):
     filteredBefore = filter(parameter, dateBefore, interval)
     filteredBefore["Datum"] += pd.DateOffset(years=int(date.year)-int(year))
     filteredBefore["Legende"] = year
+
     chart = alt.Chart(filtered).mark_area(opacity=0.5).encode(
         alt.X("Datum:T", axis=alt.Axis(format="%b %d"), title=None),
         alt.Y("Wert:Q", title=einheit(parameter),
@@ -84,10 +87,8 @@ async def get_spec(parameter, date, year, interval):
         grid=False
     ).configure_view(
         stroke=None,
-
     ).configure_title(
         fontSize=24,
-
     ).to_dict()
 
     return JSONResponse(content={"mean": mean, "meanBefore": meanBefore, "einheit": einheit(parameter), "vis": chartCombined})
