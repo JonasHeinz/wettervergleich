@@ -1,4 +1,6 @@
 import { Typography } from "@mui/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 import "../App.css";
 
 import { useState } from "react";
@@ -8,25 +10,34 @@ import Grid from "@mui/material/Grid2";
 
 export default function App() {
   const [spec, setSpec] = useState({});
+  const darkTheme = createTheme({
+    palette: {
+      mode: "dark",
+    },
+  });
 
   return (
     <>
       <div id="side">
-        <div id="content">
-          <header>
-            <Typography variant="h3" component="h2">
-              Wettervergleich
-            </Typography>
-          </header>
-          <Grid container spacing={2}>
-            <Grid size={4}>
-              <VegaForm setSpec={setSpec} />
+        <header>
+          <Typography variant="h3" component="h2">
+            Wettervergleich
+          </Typography>
+        </header>
+        <ThemeProvider theme={darkTheme}>
+          <CssBaseline />
+
+          <div id="content">
+            <Grid container spacing={2}>
+              <Grid size={4}>
+                <VegaForm setSpec={setSpec} spec={spec} />
+              </Grid>
+              <Grid size={8}>
+                <VegaViewer spec={spec.vis} />
+              </Grid>
             </Grid>
-            <Grid size={6}>
-              <VegaViewer spec={spec} />
-            </Grid>
-          </Grid>
-        </div>
+          </div>
+        </ThemeProvider>
       </div>
     </>
   );

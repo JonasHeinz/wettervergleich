@@ -12,15 +12,16 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Stats } from "./Stats";
 
-export function VegaForm({ setSpec }) {
+export function VegaForm({ setSpec, spec }) {
   const [parameter, setParameter] = useState("T");
   const [date, setDate] = useState(dayjs("2022-04-17"));
-  const [year, setYear] = useState(1992);
+  const [year, setYear] = useState(2000);
   const [interval, setInterval] = useState("woche");
 
   const years = [];
-  for (let i = 1992; i <= 2024; i++) {
+  for (let i = 1993; i <= 2023; i++) {
     years.push(i);
   }
   useEffect(() => {
@@ -49,12 +50,14 @@ export function VegaForm({ setSpec }) {
         >
           <MenuItem value="T">Temperatur</MenuItem>
           <MenuItem value="RainDur">Niederschlagsdauer</MenuItem>
-          <MenuItem value="p">Luftdruck</MenuItem>
+          <MenuItem value="StrGlo">Globalstrahlung</MenuItem>
         </Select>
       </FormControl>
       <FormControl fullWidth>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
+            minDate={dayjs("1993-01-01")}
+            maxDate={dayjs("2023-12-01")}
             label="Start Datum"
             value={date}
             onChange={(newVal) => setDate(newVal)}
@@ -89,6 +92,13 @@ export function VegaForm({ setSpec }) {
           <MenuItem value="jahr">Jahr</MenuItem>
         </Select>
       </FormControl>
+      <Stats
+        date={date}
+        year={year}
+        meanBefore={spec.meanBefore}
+        mean={spec.mean}
+        einheit={spec.einheit}
+      />
     </Stack>
   );
 }
