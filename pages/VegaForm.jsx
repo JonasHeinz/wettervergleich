@@ -21,7 +21,7 @@ export function VegaForm({ setSpec, spec }) {
   const [interval, setInterval] = useState("woche");
 
   const years = [];
-  for (let i = 1993; i <= 2023; i++) {
+  for (let i = parameter == "RainDur" ? 1999 : 1993; i <= 2023; i++) {
     years.push(i);
   }
   useEffect(() => {
@@ -56,8 +56,12 @@ export function VegaForm({ setSpec, spec }) {
       <FormControl fullWidth>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
-            minDate={dayjs("1993-01-01")}
-            maxDate={dayjs("2023-12-01")}
+            minDate={
+              parameter == "RainDur" ? dayjs("1999-06-25") : dayjs("1993-01-01")
+            }
+            maxDate={
+              interval == "jahr" ? dayjs("2023-12-01") : dayjs("2024-11-01")
+            }
             label="Start Datum"
             value={date}
             onChange={(newVal) => setDate(newVal)}
