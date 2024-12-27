@@ -26,7 +26,7 @@ export function VegaForm({ setSpec, spec }) {
   }
   useEffect(() => {
     axios
-      .get(`https://wettervergleich.vercel.app/specs`, {
+      .get(`http://127.0.0.1:8000/specs`, {
         params: {
           parameter: parameter,
           date: date.format(),

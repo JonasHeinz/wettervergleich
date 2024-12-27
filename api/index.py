@@ -63,13 +63,13 @@ async def get_spec(parameter, date, year, interval):
     filteredBefore["Datum"] += pd.DateOffset(years=int(date.year)-int(year))
     filteredBefore["Legende"] = year
 
-    chart = alt.Chart(filtered).mark_area(opacity=0.5).encode(
+    chart = alt.Chart(filtered).mark_line().encode(
         alt.X("Datum:T", axis=alt.Axis(format="%b %d"), title=None),
         alt.Y("Wert:Q", title=einheit(parameter),
               axis=alt.Axis(titleFontSize=18)),
         alt.Color("Legende:N",  scale=alt.Scale(scheme='viridis'))
     )
-    chartBefore = alt.Chart(filteredBefore).mark_area(opacity=0.5).encode(
+    chartBefore = alt.Chart(filteredBefore).mark_line().encode(
         alt.X("Datum:T", axis=alt.Axis(format="%b %d"), title=None),
         alt.Y("Wert:Q"),
         alt.Color("Legende:N",  scale=alt.Scale(scheme='viridis'),
