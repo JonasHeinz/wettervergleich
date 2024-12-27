@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pandas import read_csv, to_datetime, DataFrame, DateOffset
+from pandas import read_csv, to_datetime, DateOffset
 import altair as alt
 
 app = FastAPI()
