@@ -26,6 +26,7 @@
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.4",
     "next": "^14.2.13",
+    "polars": "^0.0.1",
     "postcss": "^8.4.47",
     "python": "^0.0.4",
     "python3": "^0.0.1",
