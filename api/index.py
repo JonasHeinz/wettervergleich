@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import pandas as pd
+from pandas import read_csv, to_datetime, DataFrame, DateOffset
 import altair as alt
 
 app = FastAPI()
@@ -23,16 +23,16 @@ app.add_middleware(
 
 def filter(parameter, date, interval):
 
-    data = pd.read_csv("./data/wetterdaten_combined.csv")
+    data = read_csv("./data/wetterdaten_combined.csv")
 
-    data["Datum"] = pd.to_datetime(data["Datum"])
+    data["Datum"] = to_datetime(data["Datum"])
     endDate = date
     if interval == "jahr":
-        endDate += pd.DateOffset(years=1)
+        endDate += DateOffset(years=1)
     elif interval == "monat":
-        endDate += pd.DateOffset(months=1)
+        endDate += DateOffset(months=1)
     elif interval == "woche":
-        endDate += pd.DateOffset(weeks=1)
+        endDate += DateOffset(weeks=1)
 
     data = data[data["Datum"] >= date]
 
@@ -55,12 +55,12 @@ def einheit(parameter):
 
 @app.get("/specs/")
 async def get_spec(parameter, date, year, interval):
-    date = pd.to_datetime(date)
+    date = to_datetime(date)
     dateBefore = date.replace(year=int(year))
     filtered = filter(parameter, date, interval)
     filtered["Legende"] = date.year
     filteredBefore = filter(parameter, dateBefore, interval)
-    filteredBefore["Datum"] += pd.DateOffset(years=int(date.year)-int(year))
+    filteredBefore["Datum"] += DateOffset(years=int(date.year)-int(year))
     filteredBefore["Legende"] = year
 
     chart = alt.Chart(filtered).mark_line().encode(
