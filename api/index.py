@@ -44,21 +44,21 @@ def filter(parameter, date, interval):
         endDate = date + dt.timedelta(weeks=1)
 
     filtered_data = []
-    with open(FILE_PATH, mode="r", newline="", encoding="utf-8") as file:
-        data = csv.DictReader(file)
-        for row in data:
-            if row["Datum"] != "Datum" and row["Wert"].strip():
-                row_date = parse_date(row["Datum"])
-                if (
-                    date <= row_date <= endDate
-                    and row["Parameter"] == parameter
-                    and row["Standort"] == "Zch_Stampfenbachstrasse"
-                ):
-                    filtered_data.append({
-                        "Datum": row_date.isoformat(),
-                        "Wert": float(row["Wert"]),
-                        "Legende": date.year
-                    })
+    # with open(FILE_PATH, mode="r", newline="", encoding="utf-8") as file:
+    #     data = csv.DictReader(file)
+    #     for row in data:
+    #         if row["Datum"] != "Datum" and row["Wert"].strip():
+    #             row_date = parse_date(row["Datum"])
+    #             if (
+    #                 date <= row_date <= endDate
+    #                 and row["Parameter"] == parameter
+    #                 and row["Standort"] == "Zch_Stampfenbachstrasse"
+    #             ):
+    #                 filtered_data.append({
+    #                     "Datum": row_date.isoformat(),
+    #                     "Wert": float(row["Wert"]),
+    #                     "Legende": date.year
+    #                 })
 
     return filtered_data
 
