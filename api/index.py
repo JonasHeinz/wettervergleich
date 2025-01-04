@@ -47,7 +47,7 @@ def filter(parameter, date, interval):
     with open(FILE_PATH, mode="r", newline="", encoding="utf-8") as file:
         data = csv.DictReader(file)
         for row in data:
-            if row["Datum"] == "Datum" and row["Wert"].strip():
+            if row["Datum"] != "Datum" and row["Wert"].strip():
                 row_date = parse_date(row["Datum"])
                 if (
                     date <= row_date <= endDate
@@ -72,7 +72,7 @@ def einheit(parameter):
         return "W/m2"
 
 
-@app.get("/api/py/specs")
+@app.get("/specs")
 async def get_spec(parameter, date, year, interval):
     parsed_date = parse_date(date)
     dateBefore = parsed_date.replace(year=int(year))
