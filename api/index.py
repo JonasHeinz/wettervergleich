@@ -102,9 +102,9 @@ async def get_spec(parameter, date, year, interval):
         height=400,
     )
 
-    mean = round(sum(float(d["Wert"]) for d in filtered) / len(filtered), 2)
-    meanBefore = round(sum(float(d["Wert"])
-                       for d in filteredBefore) / len(filteredBefore), 2)
+    # mean = round(sum(float(d["Wert"]) for d in filtered) / len(filtered), 2)
+    # meanBefore = round(sum(float(d["Wert"])
+    #                    for d in filteredBefore) / len(filteredBefore), 2)
 
     chartCombined = alt.layer(chart, chartBefore).configure_axis(
         grid=False
@@ -114,4 +114,4 @@ async def get_spec(parameter, date, year, interval):
         fontSize=24,
     ).to_dict()
 
-    return JSONResponse(content={"mean": mean, "meanBefore": meanBefore, "einheit": einheit(parameter), "vis": chartCombined})
+    return JSONResponse(content=chartCombined)
