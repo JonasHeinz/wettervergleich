@@ -80,38 +80,38 @@ async def get_spec(parameter, date, year, interval):
     filtered = filter(parameter, parsed_date, interval)
 
     filteredBefore = filter(parameter, dateBefore, interval)
-    for row in filteredBefore:
-        row["Datum"] = parse_date(row["Datum"]).replace(
-            year=parse_date(row["Datum"]).year + parsed_date.year - int(year)).isoformat()
+    # for row in filteredBefore:
+    #     row["Datum"] = parse_date(row["Datum"]).replace(
+    #         year=parse_date(row["Datum"]).year + parsed_date.year - int(year)).isoformat()
 
-    chart = alt.Chart(alt.Data(values=filtered)).mark_line().encode(
-        alt.X("Datum:T", axis=alt.Axis(format="%b %d"), title=None),
-        alt.Y("Wert:Q", title=einheit(parameter),
-              axis=alt.Axis(titleFontSize=18)),
-        alt.Color("Legende:N",  scale=alt.Scale(scheme='viridis'))
-    )
-    chartBefore = alt.Chart(alt.Data(values=filteredBefore)).mark_line().encode(
-        alt.X("Datum:T", axis=alt.Axis(format="%b %d"), title=None),
-        alt.Y("Wert:Q"),
-        alt.Color("Legende:N",  scale=alt.Scale(scheme='viridis'),
-                  legend=alt.Legend(title="Jahr", labelFontSize=18,  titleFontSize=18, orient='bottom',
-                                    ))
-    ).properties(
-        title=f'Wettervergleich {year} zu {parsed_date.year}',
-        width=600,
-        height=400,
-    )
+    # chart = alt.Chart(alt.Data(values=filtered)).mark_line().encode(
+    #     alt.X("Datum:T", axis=alt.Axis(format="%b %d"), title=None),
+    #     alt.Y("Wert:Q", title=einheit(parameter),
+    #           axis=alt.Axis(titleFontSize=18)),
+    #     alt.Color("Legende:N",  scale=alt.Scale(scheme='viridis'))
+    # )
+    # chartBefore = alt.Chart(alt.Data(values=filteredBefore)).mark_line().encode(
+    #     alt.X("Datum:T", axis=alt.Axis(format="%b %d"), title=None),
+    #     alt.Y("Wert:Q"),
+    #     alt.Color("Legende:N",  scale=alt.Scale(scheme='viridis'),
+    #               legend=alt.Legend(title="Jahr", labelFontSize=18,  titleFontSize=18, orient='bottom',
+    #                                 ))
+    # ).properties(
+    #     title=f'Wettervergleich {year} zu {parsed_date.year}',
+    #     width=600,
+    #     height=400,
+    # )
 
-    mean = round(sum(float(d["Wert"]) for d in filtered) / len(filtered), 2)
-    meanBefore = round(sum(float(d["Wert"])
-                       for d in filteredBefore) / len(filteredBefore), 2)
+    # mean = round(sum(float(d["Wert"]) for d in filtered) / len(filtered), 2)
+    # meanBefore = round(sum(float(d["Wert"])
+    #                    for d in filteredBefore) / len(filteredBefore), 2)
 
-    chartCombined = alt.layer(chart, chartBefore).configure_axis(
-        grid=False
-    ).configure_view(
-        stroke=None,
-    ).configure_title(
-        fontSize=24,
-    ).to_dict()
+    # chartCombined = alt.layer(chart, chartBefore).configure_axis(
+    #     grid=False
+    # ).configure_view(
+    #     stroke=None,
+    # ).configure_title(
+    #     fontSize=24,
+    # ).to_dict()
 
-    return JSONResponse(content={"mean": mean, "meanBefore": meanBefore, "einheit": einheit(parameter), "vis": chartCombined})
+    return JSONResponse(content={"mean": filtered, "meanBefore": filteredBefore, "einheit": einheit(parameter), "vis": filteredBefore})
