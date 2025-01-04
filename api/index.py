@@ -112,4 +112,4 @@ async def get_spec(parameter, date, year, interval):
     #     fontSize=24,
     # ).to_dict()
 
-    return JSONResponse(content={"mean": filtered, "meanBefore": filteredBefore, "einheit": einheit(parameter), "vis": filteredBefore})
+    return JSONResponse(content={"mean": "filtered", "meanBefore": "filteredBefore", "einheit": einheit(parameter), "vis": "filteredBefore"})
