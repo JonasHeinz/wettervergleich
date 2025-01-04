@@ -10,8 +10,6 @@ app = FastAPI()
 allow_origins = [
     "http://localhost:3000",
     "https://wettervergleich.vercel.app",
-    "https://wettervergleich-git-main-jonasheinzs-projects.vercel.app/",
-    "https://wettervergleich-jfglsmnhe-jonasheinzs-projects.vercel.app/"
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -32,16 +30,16 @@ def parse_date(date_str):
 
 
 def filter(parameter, date, interval):
-    endDate = date
+    # endDate = date
 
-    if interval == "jahr":
-        endDate = dt.datetime(date.year + 1, date.month, date.day)
-    elif interval == "monat":
-        next_month = date.month + 1 if date.month < 12 else 1
-        next_year = date.year if date.month < 12 else date.year + 1
-        endDate = dt.datetime(next_year, next_month, date.day)
-    elif interval == "woche":
-        endDate = date + dt.timedelta(weeks=1)
+    # if interval == "jahr":
+    #     endDate = dt.datetime(date.year + 1, date.month, date.day)
+    # elif interval == "monat":
+    #     next_month = date.month + 1 if date.month < 12 else 1
+    #     next_year = date.year if date.month < 12 else date.year + 1
+    #     endDate = dt.datetime(next_year, next_month, date.day)
+    # elif interval == "woche":
+    #     endDate = date + dt.timedelta(weeks=1)
 
     filtered_data = []
     # with open(FILE_PATH, mode="r", newline="", encoding="utf-8") as file:
