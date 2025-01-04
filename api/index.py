@@ -5,7 +5,7 @@ import csv
 import altair as alt
 import datetime as dt
 
-app = FastAPI()
+app = FastAPI(docs_url="/api/py/docs", openapi_url="/api/py/openapi.json")
 
 allow_origins = [
     "http://localhost:3000",
