@@ -72,7 +72,7 @@ def einheit(parameter):
         return "W/m2"
 
 
-@app.get("/api/specs")
+@app.get("/api/py/specs")
 async def get_spec(parameter, date, year, interval):
     parsed_date = parse_date(date)
     dateBefore = parsed_date.replace(year=int(year))
