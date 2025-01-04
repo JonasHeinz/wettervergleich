@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import pandas as pd
+import csv
 import altair as alt
+import datetime as dt
 
 app = FastAPI()
 
@@ -20,28 +21,46 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+FILE_PATH = "./data/wetterdaten_combined.csv"
+
+
+def parse_date(date_str):
+    try:
+        return dt.datetime.fromisoformat(date_str).replace(tzinfo=None)
+    except ValueError:
+        return None
+
 
 def filter(parameter, date, interval):
-
-    data = pd.read_csv("./data/wetterdaten_combined.csv")
-
-    data["Datum"] = pd.to_datetime(data["Datum"])
     endDate = date
+
     if interval == "jahr":
-        endDate += pd.DateOffset(years=1)
+        endDate = dt.datetime(date.year + 1, date.month, date.day)
     elif interval == "monat":
-        endDate += pd.DateOffset(months=1)
+        next_month = date.month + 1 if date.month < 12 else 1
+        next_year = date.year if date.month < 12 else date.year + 1
+        endDate = dt.datetime(next_year, next_month, date.day)
     elif interval == "woche":
-        endDate += pd.DateOffset(weeks=1)
+        endDate = date + dt.timedelta(weeks=1)
 
-    data = data[data["Datum"] >= date]
+    filtered_data = []
+    with open(FILE_PATH, mode="r", newline="", encoding="utf-8") as file:
+        data = csv.DictReader(file)
+        for row in data:
+            if row["Datum"] != "Datum" and row["Wert"].strip():
+                row_date = parse_date(row["Datum"])
+                if (
+                    date <= row_date <= endDate
+                    and row["Parameter"] == parameter
+                    and row["Standort"] == "Zch_Stampfenbachstrasse"
+                ):
+                    filtered_data.append({
+                        "Datum": row_date.isoformat(),
+                        "Wert": float(row["Wert"]),
+                        "Legende": date.year
+                    })
 
-    data = data[data["Datum"] <= endDate]
-
-    data = data[data["Parameter"] == parameter]
-    data = data[data["Standort"] == "Zch_Stampfenbachstrasse"]
-
-    return data
+    return filtered_data
 
 
 def einheit(parameter):
@@ -55,34 +74,38 @@ def einheit(parameter):
 
 @app.get("/specs/")
 async def get_spec(parameter, date, year, interval):
-    date = pd.to_datetime(date)
-    dateBefore = date.replace(year=int(year))
-    filtered = filter(parameter, date, interval)
-    filtered["Legende"] = date.year
-    filteredBefore = filter(parameter, dateBefore, interval)
-    filteredBefore["Datum"] += pd.DateOffset(years=int(date.year)-int(year))
-    filteredBefore["Legende"] = year
+    parsed_date = parse_date(date)
+    dateBefore = parsed_date.replace(year=int(year))
 
-    chart = alt.Chart(filtered).mark_line().encode(
+    filtered = filter(parameter, parsed_date, interval)
+
+    filteredBefore = filter(parameter, dateBefore, interval)
+    for row in filteredBefore:
+        row["Datum"] = parse_date(row["Datum"]).replace(
+            year=parse_date(row["Datum"]).year + parsed_date.year - int(year)).isoformat()
+
+    chart = alt.Chart(alt.Data(values=filtered)).mark_line().encode(
         alt.X("Datum:T", axis=alt.Axis(format="%b %d"), title=None),
         alt.Y("Wert:Q", title=einheit(parameter),
               axis=alt.Axis(titleFontSize=18)),
         alt.Color("Legende:N",  scale=alt.Scale(scheme='viridis'))
     )
-    chartBefore = alt.Chart(filteredBefore).mark_line().encode(
+    chartBefore = alt.Chart(alt.Data(values=filteredBefore)).mark_line().encode(
         alt.X("Datum:T", axis=alt.Axis(format="%b %d"), title=None),
         alt.Y("Wert:Q"),
         alt.Color("Legende:N",  scale=alt.Scale(scheme='viridis'),
                   legend=alt.Legend(title="Jahr", labelFontSize=18,  titleFontSize=18, orient='bottom',
                                     ))
     ).properties(
-        title=f'Wettervergleich {year} zu {date.year}',
+        title=f'Wettervergleich {year} zu {parsed_date.year}',
         width=600,
         height=400,
     )
 
-    mean = filtered['Wert'].mean().round(2)
-    meanBefore = filteredBefore['Wert'].mean().round(2)
+    mean = round(sum(float(d["Wert"]) for d in filtered) / len(filtered), 2)
+    meanBefore = round(sum(float(d["Wert"])
+                       for d in filteredBefore) / len(filteredBefore), 2)
+
     chartCombined = alt.layer(chart, chartBefore).configure_axis(
         grid=False
     ).configure_view(
