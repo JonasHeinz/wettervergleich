@@ -14,7 +14,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Stats } from "./Stats";
 
-export function VegaForm({ setSpec, spec }) {
+export function VegaForm({ setSpec, spec, setIsLoading }) {
   const [parameter, setParameter] = useState("T");
   const [date, setDate] = useState(dayjs("2022-04-17"));
   const [year, setYear] = useState(2000);
@@ -25,6 +25,7 @@ export function VegaForm({ setSpec, spec }) {
     years.push(i);
   }
   useEffect(() => {
+    setIsLoading(true);
     axios
       .get(`https://wettervergleich.vercel.app/api/py/specs`, {
         params: {
@@ -34,8 +35,14 @@ export function VegaForm({ setSpec, spec }) {
           interval: interval,
         },
       })
-      .then((response) => setSpec(response.data))
-      .catch((error) => console.error("Error fetching spec content:", error));
+      .then((response) => {
+        setSpec(response.data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.error("Error fetching spec content:", error);
+      });
   }, [parameter, date, year, interval, setSpec]);
 
   return (
